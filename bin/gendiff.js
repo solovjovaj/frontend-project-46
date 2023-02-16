@@ -7,7 +7,7 @@ program
   .version('-V, --version')
   .helpOption('-h, --help')
   .option('-f, --format <type>', 'output format')
-  .arguments('<filepath1>, <filepath2>');
+  .arguments('<filepath1, <filepath2>');
 
   program.parse();
 
