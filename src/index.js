@@ -1,30 +1,35 @@
-import { readFileSync } from 'fs';
 import _ from 'lodash';
+import { readFileSync } from 'node:fs';
+import path from 'path';
+
+const makeParse = (filepath) => {
+    return JSON.parse(readFileSync(path.resolve(filepath), 'utf-8'));
+};
 
 const genDiff = (filepath1, filepath2) => {
-  const dataParse1 = JSON.parse(readFileSync(filepath1, 'utf-8'));
-  const dataParse2 = JSON.parse(readFileSync(filepath2, 'utf-8'));
-  const genDiffFn = (dataParse1, dataParse2) => {
-    const result = {};
-    const keysOfObj1 = _.keys(dataParse1);
-    const keysOfObj2 = _.keys(dataParse2);
-    const keys = _.union(keysOfObj1, keysOfObj2);
-    for (const key of keys) {
-      if (!_.has(dataParse1, key)) {
-        result[key] = '+';
-      } else if (!_.has(dataParse2, key)) {
-        result[key] = '-';
-      } else if (dataParse1[key] !== dataParse2[key]) {
-        result[key] = '-';
-      } else {
-        result[key] = '';
-      }
+  if (!filepath1.endsWith('json') || !filepath2.endsWith('json')) {
+    return 'Error: file is not .json extension';
+  }
+  const file1 = makeParse(filepath1);
+  const file2 = makeParse(filepath2);
+  const sortedAllKeys = _.union(_.keys(file1), _.keys(file2)).sort();
+  const result = sortedAllKeys.reduce((diff, key) => {
+    if (!Object.hasOwn(file1, key)) {
+      diff = `${diff}\n  + ${key}: ${file2[key]}`;
+      return diff;
     }
-
-    return result;
-  };
-
-  return genDiffFn(dataParse1, dataParse2);
+    if (!Object.hasOwn(file2, key)) {
+      diff = `${diff}\n  - ${key}: ${file1[key]}`;
+      return diff;
+    }
+    if (file1[key] !== file2[key]) {
+      diff = `${diff}\n  - ${key}: ${file1[key]}\n  + ${key}: ${file2[key]}`;
+      return diff;
+    }
+    diff = `${diff}\n    ${key}: ${file1[key]}`;
+    return diff;
+  }, '');
+  return `{${result}\n}`;
 };
 
 export default genDiff;
