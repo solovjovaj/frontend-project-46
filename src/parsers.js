@@ -1,16 +1,16 @@
-import { load } from 'js-yaml';
+import * as yaml from 'js-yaml';
 
-const getParser = (data, format) => {
+const getParse = (fileContent, format) => {
   switch (format) {
     case 'json':
-      return JSON.parse(data);
+      return JSON.parse(fileContent);
     case 'yaml':
-      return load(data);
+      return yaml.load(fileContent);
     case 'yml':
-      return load(data);
+      return yaml.load(fileContent);
     default:
-      throw new Error('Unknown fornmat. You can use JSON or YAML formats.');
+      throw new Error(`Format ${format} - is incorrect`);
   }
 };
 
-export default getParser;
+export default getParse;
