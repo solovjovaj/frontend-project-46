@@ -1,42 +1,26 @@
-import fs from 'fs';
-import { test, expect } from '@jest/globals';
+import { describe, expect, test } from '@jest/globals';
+import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
-import path from 'path';
+import { dirname, resolve } from 'path';
 import genDiff from '../src/index.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirName = dirname(filename);
+const readFile = (nameOfFile) => readFileSync(resolve(dirName, '..', '__fixtures__', nameOfFile), 'utf-8');
 
-const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
-const readFile = (filename) => fs.readFileSync(getFixturePath(filename), 'utf-8');
-
-const tests = [
-  {
-    file1: 'file1.json', file2: 'file2.json', formatter: 'stylish', output: 'stylishOutput.txt',
-  },
-  {
-    file1: 'file1.yaml', file2: 'file2.yaml', formatter: 'stylish', output: 'stylishOutput.txt',
-  },
-  {
-    file1: 'file1.json', file2: 'file2.json', formatter: 'plain', output: 'plainOutput.txt',
-  },
-  {
-    file1: 'file1.yaml', file2: 'file2.yaml', formatter: 'plain', output: 'plainOutput.txt',
-  },
-  {
-    file1: 'file1.json', file2: 'file2.json', formatter: 'json', output: 'outputresult.json',
-  },
-  {
-    file1: 'file1.yaml', file2: 'file2.yaml', formatter: 'json', output: 'outputresult.json',
-  },
+const cases = [
+  ['__fixtures__/file1.json', '__fixtures__/file2.json', readFile('stylishTest.txt')],
+  ['__fixtures__/file1.yml', '__fixtures__/file2.yaml', readFile('stylishTest.txt')],
+  ['__fixtures__/file1.json', '__fixtures__/file2.json', readFile('stylishTest.txt'), 'stylish'],
+  ['__fixtures__/file1.yml', '__fixtures__/file2.yaml', readFile('stylishTest.txt'), 'stylish'],
+  ['__fixtures__/file1.json', '__fixtures__/file2.json', readFile('plainTest.txt'), 'plain'],
+  ['__fixtures__/file1.yml', '__fixtures__/file2.yaml', readFile('plainTest.txt'), 'plain'],
+  ['__fixtures__/file1.json', '__fixtures__/file2.json', readFile('jsonTest.txt'), 'json'],
+  ['__fixtures__/file1.yml', '__fixtures__/file2.yaml', readFile('jsonTest.txt'), 'json'],
 ];
 
-test.each(tests)('gendiff stylish, plain and json tests', ({
-  file1, file2, formatter, output,
-}) => {
-  const filepath1 = getFixturePath(file1);
-  const filepath2 = getFixturePath(file2);
-  const expected = readFile(output);
-  const result = genDiff(filepath1, filepath2, formatter);
-  expect(result).toEqual(expected);
+describe('output format', () => {
+  test.each(cases)('difference %s and %s', (a, b, result, format = 'stylish') => {
+    expect(genDiff(a, b, format)).toEqual(result);
+  });
 });
