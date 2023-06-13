@@ -30,17 +30,17 @@ Gendiff - is a utility that determines the difference between two data structure
 `json`  - for json output of the difference
 
 * #### Video with work process
-    [![start](https://asciinema.org/a/563490.svg)](https://asciinema.org/a/563490)
+    [![start]()](https://asciinema.org/a/563490)
 
 * #### Video with work process2
-    [![start](https://asciinema.org/a/568150.svg)](https://asciinema.org/a/568150)
+    [![start]()](https://asciinema.org/a/568150)
 
 * #### Video with work process3
-    [![start](https://asciinema.org/a/571384.svg)](https://asciinema.org/a/571384)
+    [![start]()](https://asciinema.org/a/571384)
 
 * #### Video with work process4(plain format)
-    [![start](https://asciinema.org/a/572118.svg)](https://asciinema.org/a/572118)
+    [![start]()](https://asciinema.org/a/572118)
 
 
 * #### Video with work process5(json format)
-    [![start](https://asciinema.org/a/572422.svg)](https://asciinema.org/
+    [![start]()](https://asciinema.org/
