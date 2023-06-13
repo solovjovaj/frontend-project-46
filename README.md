@@ -9,11 +9,11 @@
 
 Install
 
-Clone repository local git clone git@github.com:SmwOverRainbow/frontend-project-46.git
+Clone repository local - git clone 
 
-Install all dependencies npm ci
+Install all dependencies - npm ci
 
-Install apps global npm link
+Install apps global - npm link
 
 Run app with command: gendiff <filepath1>filename1.json <filepath2>filename2.yaml
 
