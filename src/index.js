@@ -1,20 +1,26 @@
-import fs from 'fs';
-import path from 'path';
-import diffTree from './findDiff.js';
-import getParser from './parsers.js';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
+import { cwd } from 'process';
+import getDiffTree from './getDiff.js';
+import getParse from './parser.js';
 import getFormat from './formatters/index.js';
 
-const getFileFormat = (filepath) => path.extname(filepath).slice(1);
-const getPathFile = (filepath) => path.resolve(process.cwd(), filepath).trim();
-const readFile = (filepath) => fs.readFileSync(getPathFile(filepath), 'utf-8');
+function getExtension(pathOfFile) {
+  const components = pathOfFile.split('.');
+  const dataFormat = components.at(-1);
+  return dataFormat;
+}
 
-const genDiff = (filepath1, filepath2, format = 'stylish') => {
-  const dataFromFilepath1 = readFile(filepath1);
-  const dataFromFilepath2 = readFile(filepath2);
-  const file1obj = getParser(dataFromFilepath1, getFileFormat(filepath1));
-  const file2obj = getParser(dataFromFilepath2, getFileFormat(filepath2));
-  const diff = diffTree(file1obj, file2obj);
-  return getFormat(diff, format);
+const getFileContent = (pathOfFile) => readFileSync(resolve(cwd(), pathOfFile), 'utf-8');
+
+export default (filepath1, filepath2, format = 'stylish') => {
+  const dataFormat1 = getExtension(filepath1);
+  const dataFormat2 = getExtension(filepath2);
+  const fileContent1 = getFileContent(filepath1);
+  const fileContent2 = getFileContent(filepath2);
+
+  const firstObject = getParse(fileContent1, dataFormat1);
+  const secondObject = getParse(fileContent2, dataFormat2);
+  const astTree = getDiffTree(firstObject, secondObject);
+  return getFormat(astTree, format);
 };
-
-export default genDiff;
