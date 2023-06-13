@@ -1,43 +1,32 @@
-import _ from 'lodash';
-
-const checkValueFormat = (value) => {
-  if (_.isObject(value)) {
+const getValue = (value) => {
+  if (typeof value === 'object' && value !== null) {
     return '[complex value]';
   }
-  if (_.isString(value)) {
+  if (typeof value === 'string') {
     return `'${value}'`;
   }
-  return value;
+  return `${value}`;
 };
 
-const plain = (diff, fileName = []) => {
-  const {
-    type, children, name, value, value1, value2,
-  } = diff;
-  const nestedKeys = [...fileName, name];
-  const joinPath = nestedKeys.join('.');
-  switch (type) {
-    case 'root': {
-      const result = children
-        .filter((child) => child.type !== 'unchanged')
-        .flatMap((child) => plain(child, []));
-      return result.join('\n');
-    }
-    case 'nested': {
-      const result = children
-        .filter((child) => child.type !== 'unchanged')
-        .flatMap((child) => plain(child, nestedKeys));
-      return result.join('\n');
-    }
-    case 'added':
-      return `Property '${joinPath}' was added with value: ${checkValueFormat(value)}`;
-    case 'deleted':
-      return `Property '${joinPath}' was removed`;
-    case 'changed':
-      return `Property '${joinPath}' was updated. From ${checkValueFormat(value1)} to ${checkValueFormat(value2)}`;
-    default:
-      throw new Error(`Type: ${type} is undefined`);
-  }
+const getPlainFormat = (tree) => {
+  const iter = (tree2, path = '') => {
+    const filterTree = tree2.filter((item) => item.status !== 'unchanged');
+    const mapTree = filterTree.map((child) => {
+      const currentPath = `${path}${child.key}`;
+      switch (child.status) {
+        case 'nested':
+          return iter(child.children, `${currentPath}.`);
+        case 'added':
+          return `Property '${currentPath}' was added with value: ${getValue(child.value)}`;
+        case 'changed':
+          return `Property '${currentPath}' was updated. From ${getValue(child.value1)} to ${getValue(child.value2)}`;
+        default:
+          return `Property '${currentPath}' was removed`;
+      }
+    });
+    return mapTree.join('\n');
+  };
+  return iter(tree);
 };
 
-export default plain;
+export default getPlainFormat;
