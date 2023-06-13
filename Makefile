@@ -1,14 +1,12 @@
-install:
+install: 
 	npm ci
-
-gendiff:
-	node bin/gendiff.js
-
 publish:
 	npm publish --dry-run
-
-lint: 
+gendiff:
+	node bin/gendiff.js
+make lint: 
 	npx eslint .
-
 test:
-	npm test
+	NODE_OPTIONS=--experimental-vm-modules npx jest
+test-coverage:   	
+	npm test -- --coverage --coverageProvider=v8
